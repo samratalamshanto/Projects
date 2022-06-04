@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles</title>
+</head>
+
+<body>
+    <div>
+        <div><a href="/articles">Articles</a></div>
+        <div><a href="/users">Users</a></div>
+        <div><a href="/">Login</a></div>
+    </div>
+    <br>
+    <br>
+
+    <div>
+        <form action="/articles" method="post">
+            <input type="text" name="article" placeholder="Article" value="" />
+            <input type="submit" value="Post Article" />
+        </form>
+    </div>
+
+    <div>
+        <br>
+        <br>
+        <h1>
+            Article:
+        </h1>
+        <div>
+            <% fetchArticle.forEach((article)=>{ %>
+
+
+                <li>
+                    <%= article.article %>
+                </li>
+                <a href="/articles/<%= article._id %>/delete">Delete</a>
+                <br>
+                <br>
+
+                <% }) %>
+        </div>
+        <br>
+        <br>
+    </div>
+    <div>
+
+    </div>
+
+</body>
+<script>
+    document.querySelector('input').focus();
+</script>
+
+</html>
