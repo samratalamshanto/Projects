@@ -17,6 +17,9 @@ const userData = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  roles: {
+    type: String,
+  },
   // types: {type: String,
   //    possibleValues : ['blue','red','yellow','black'],
   //   required: true},

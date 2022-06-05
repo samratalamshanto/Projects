@@ -10,49 +10,56 @@
 
 <body>
     <div>
-        <div><a href="/articles">Articles</a></div>
-        <div><a href="/">Logout</a></div>
-    </div>
-    <br>
-    <hr>
-    <br>
-    <h1>Post Article:</h1>
-    <div>
-        <form action="/articles" method="post">
-            <input type="text" name="article" placeholder="Article" value="" required />
-            <input type="submit" value="Post Article" />
-            <input type="reset" value="Reset">
-        </form>
-    </div>
-    <br>
-    <br>
-    <hr>
-    <div>
-        <br>
-        <br>
-        <h1>
-            Articles:
-        </h1>
+
+
+
         <div>
-            <% fetchArticle.forEach((article)=>{ %>
+            <div><a href="/articles">Articles</a></div>
+            <div><a href="/">Logout</a></div>
+        </div>
 
 
-                <li>
-                    <%= article.article %>
-                </li>
-                <a href="/articles/<%= article._id %>/delete">Delete</a>
-                <br>
-                <br>
 
-                <% }) %>
+        <br>
+        <hr>
+        <br>
+        <h1>Post Article:</h1>
+        <div>
+            <form action="/articles" method="post">
+                <input type="text" name="article" placeholder="Article" value="" required />
+                <input type="submit" value="Post Article" />
+                <input type="reset" value="Reset">
+            </form>
         </div>
         <br>
         <br>
-    </div>
-    <div>
+        <hr>
+        <div>
+            <br>
+            <br>
+            <h1>
+                Articles:
+            </h1>
+            <div>
+                <% fetchArticle.forEach((article)=>{ %>
 
-    </div>
 
+                    <li>
+                        <%= article.article %>
+                    </li>
+                    <a href="/articles/<%= article._id %>/delete">Delete</a>
+                    <br>
+                    <br>
+
+                    <% }) %>
+            </div>
+            <br>
+            <br>
+        </div>
+        <div>
+
+        </div>
+    </div>
 </body>
 <script>
     document.querySelector('input').focus();

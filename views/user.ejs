@@ -10,8 +10,9 @@
 
 <body>
     <div>
-        <div><a href="/articles">Articles</a></div>
+
         <div><a href="/user">User</a></div>
+        <div><a href="/">Log out</a></div>
 
     </div>
     <br>
@@ -27,13 +28,7 @@
             <input type="password" name="password" placeholder="password" value="" required />
             <div>
                 <br>
-                <input type="radio" id="admin" name="types" value="admin" />
-                <label for="admin">Admin</label>
-                <input type="radio" id="active" name="types" value="active" />
-                <label for="activeUser">Active Editor</label>
-                <input type="radio" id="inactive" name="types" value="inactive" />
-                <label for="inactiveUser">Inactive Editor</label>
-                <br>
+                <input type="text" name="roles" placeholder="Role: admin or editor?" value="" required>
             </div>
 
             <br>
@@ -54,7 +49,8 @@
             <% fetchUser.forEach((user)=>{ %>
                 <li>
                     Username: <%= user.username %>,
-                        Email: <%= user.email %>
+                        Email: <%= user.email %>,
+
                 </li>
                 <a href="/user/<%= user._id %>/delete">Delete</a>
                 <% }) %>

@@ -28,16 +28,14 @@ async function getArticles(req, res, next) {
 //post
 
 async function postLogin(req, res, next) {
-  let isLoggedIn = "false";
-  const { email, password } = req.body;
-  console.log(req.body);
-
+  const { email, password, roles } = req.body;
+  const isAdmin = roles;
   if (email == "" || password == "") {
     return res.redirect("/");
   }
   await userModel.findOne({ email }).then((user) => {
     if (user) {
-      bcrypt.compare(password, user.password, (err, result) => {
+      bcrypt.compare(password, user.password, async (err, result) => {
         if (err) {
           return res.status(400).json({
             ERR: "Error!!!",
@@ -47,18 +45,26 @@ async function postLogin(req, res, next) {
           //success
           //jwt token
           console.log("sucessfully login");
-          isLoggedIn = "true";
-          const token = jwt.sign(
-            {
-              email,
-              userId: user._id,
-            },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: "30 days",
-            }
-          );
-          console.log(token);
+
+          if (isAdmin != "admin") {
+            const fetchArticle = await articleModel.find({}).sort("-date");
+            res.render("articles", { fetchArticle });
+          } else {
+            const fetchUser = await userModel.find({}).sort("-date");
+            res.render("user", { fetchUser });
+          }
+
+          // const token = jwt.sign(
+          //   {
+          //     email,
+          //     userId: user._id,
+          //   },
+          //   process.env.JWT_SECRET,
+          //   {
+          //     expiresIn: "30 days",
+          //   }
+          // );
+          // console.log(token);
           // res.cookie(process.env.COOKIE_NAME, token, {
           //   httpOnly: true,
           //   signed: true,
@@ -66,24 +72,22 @@ async function postLogin(req, res, next) {
           res.status(200);
           return;
         } else {
-          isLoggedIn = "false";
+          res.render("index");
         }
       });
     } else {
-      isLoggedIn = "false";
+      res.render("index");
     }
   });
-  if (isLoggedIn) {
-    const fetchArticle = await articleModel.find({}).sort("-date");
-    res.render("articles", { fetchArticle });
-  } else {
-    console.log("hpla123");
-    res.render("index");
-  }
 }
 
+var count = 0; //for counting admin
 async function postUser(req, res, next) {
-  const { username, email, password } = req.body;
+  const { username, email, password, roles } = req.body;
+  if (roles == "admin") {
+    count = count + 1;
+    console.log(count);
+  }
   if (username == "" || email == "" || password == "") {
     return res.redirect("/user");
   }
@@ -92,27 +96,53 @@ async function postUser(req, res, next) {
       console.log("already exist user");
       res.redirect("/user");
     } else {
-      bcrypt.hash(password, 10, async (err, hash) => {
-        if (err) {
-          console.log(err);
-          res.json({
-            error: err,
-          });
-        }
+      if (roles == "admin" && count == 1) {
+        bcrypt.hash(password, 10, async (err, hash) => {
+          if (err) {
+            console.log(err);
+            res.json({
+              error: err,
+            });
+          }
 
-        const newUser = userModel({
-          username,
-          email,
-          password: hash,
-        });
-        await newUser
-          .save()
-          .then((result) => {})
-          .catch((err) => {
-            console.log("error:    ", err);
+          const newUser = userModel({
+            username,
+            email,
+            password: hash,
+            roles,
           });
-        res.redirect("/user");
-      });
+          await newUser
+            .save()
+            .then((result) => {})
+            .catch((err) => {
+              console.log("error:  ", err);
+            });
+          res.redirect("/user");
+        });
+      } else if (roles == "editor") {
+        bcrypt.hash(password, 10, async (err, hash) => {
+          if (err) {
+            console.log(err);
+            res.json({
+              error: err,
+            });
+          }
+
+          const newUser = userModel({
+            username,
+            email,
+            password: hash,
+            roles,
+          });
+          await newUser
+            .save()
+            .then((result) => {})
+            .catch((err) => {
+              console.log("error:    ", err);
+            });
+          res.redirect("/user");
+        });
+      }
     }
   });
 }
@@ -136,8 +166,18 @@ async function delArticles(req, res, next) {
   res.redirect("/articles");
 }
 async function delUser(req, res, next) {
-  await userModel.findByIdAndDelete(req.params.id);
-  res.redirect("/user");
+  const fetchUser = await userModel.find({}).sort("-date");
+  if (fetchUser) {
+    const id = userModel.findById(req.params.id, async (err, doc) => {
+      if (doc.roles == "admin") {
+        console.log("Admin Role");
+        res.redirect("/user");
+      } else {
+        await userModel.findByIdAndDelete(req.params.id);
+        res.redirect("/user");
+      }
+    });
+  }
 }
 
 module.exports = {
