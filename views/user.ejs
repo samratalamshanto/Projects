@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+</head>
+
+<body>
+    <div>
+        <div><a href="/articles">Articles</a></div>
+        <div><a href="/users">Users</a></div>
+        <div><a href="/">Login</a></div>
+    </div>
+    <br>
+    <br>
+
+    <div>
+        <form action="/user" method="post">
+            <input type="text" name="username" placeholder="username" value="" required />
+            <input type="email" name="email" placeholder="email" value="" required />
+            <input type="password" name="password" placeholder="password" value="" required />
+            <div>
+                <br>
+                <input type="radio" id="admin" name="types" value="admin" />
+                <label for="admin">Admin</label>
+                <input type="radio" id="active" name="types" value="active" />
+                <label for="activeUser">Active User</label>
+                <input type="radio" id="inactive" name="types" value="inactive" />
+                <label for="inactiveUser">Inactive User</label>
+                <br>
+            </div>
+
+            <br>
+            <input type="submit" value="Add User" />
+
+            <input type="reset" value="Reset">
+        </form>
+    </div>
+
+    <div>
+        <br>
+        <br>
+        <h1>
+            User List:
+        </h1>
+        <div>
+            <% fetchUser.forEach((user)=>{ %>
+                <li>
+                    Username: <%= user.username %>,
+                        Email: <%= user.email %>
+                </li>
+                <a href="/user/<%= user._id %>/delete">Delete</a>
+                <% }) %>
+        </div>
+        <br>
+        <br>
+    </div>
+    <div>
+
+    </div>
+
+</body>
+<script>
+    document.querySelector('input').focus();
+</script>
+
+</html>
