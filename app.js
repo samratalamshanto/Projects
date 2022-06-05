@@ -40,6 +40,6 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 //routing setup
 app.use("/", loginRouter);
 app.use("/user", userRouter);
-app.use("/articles", checkLogin, articleRouter);
+app.use("/articles", articleRouter);
 
 module.exports = app;

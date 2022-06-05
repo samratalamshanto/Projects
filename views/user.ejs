@@ -11,11 +11,14 @@
 <body>
     <div>
         <div><a href="/articles">Articles</a></div>
-        <div><a href="/users">Users</a></div>
-        <div><a href="/">Login</a></div>
+        <div><a href="/user">User</a></div>
+
     </div>
     <br>
+    <hr>
     <br>
+    <br>
+    <h1>Add User:</h1>
 
     <div>
         <form action="/user" method="post">
@@ -27,9 +30,9 @@
                 <input type="radio" id="admin" name="types" value="admin" />
                 <label for="admin">Admin</label>
                 <input type="radio" id="active" name="types" value="active" />
-                <label for="activeUser">Active User</label>
+                <label for="activeUser">Active Editor</label>
                 <input type="radio" id="inactive" name="types" value="inactive" />
-                <label for="inactiveUser">Inactive User</label>
+                <label for="inactiveUser">Inactive Editor</label>
                 <br>
             </div>
 
@@ -39,7 +42,8 @@
             <input type="reset" value="Reset">
         </form>
     </div>
-
+    <br>
+    <hr>
     <div>
         <br>
         <br>

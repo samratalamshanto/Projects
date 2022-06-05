@@ -28,10 +28,10 @@ async function getArticles(req, res, next) {
 //post
 
 async function postLogin(req, res, next) {
+  let isLoggedIn = "false";
   const { email, password } = req.body;
   console.log(req.body);
-  console.log(email);
-  console.log(password);
+
   if (email == "" || password == "") {
     return res.redirect("/");
   }
@@ -39,14 +39,15 @@ async function postLogin(req, res, next) {
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
-          res.json({
+          return res.status(400).json({
             ERR: "Error!!!",
           });
         }
         if (result) {
           //success
           //jwt token
-          console.log("sucessdully login");
+          console.log("sucessfully login");
+          isLoggedIn = "true";
           const token = jwt.sign(
             {
               email,
@@ -57,56 +58,62 @@ async function postLogin(req, res, next) {
               expiresIn: "30 days",
             }
           );
-          res.cookie(process.env.COOKIE_NAME, token, {
-            maxAge: "30 days",
-            httpOnly: true,
-            signed: ture,
-          });
-          res.json({
-            " msg": "Logged IN!!!",
-            " acess_token ": token,
-          });
+          console.log(token);
+          // res.cookie(process.env.COOKIE_NAME, token, {
+          //   httpOnly: true,
+          //   signed: true,
+          // });
+          res.status(200);
+          return;
         } else {
-          res.json({
-            "  msg": "Authentication Failed!!",
-          });
+          isLoggedIn = "false";
         }
       });
     } else {
-      res.json({
-        " msg": "404 not found!!",
-      });
+      isLoggedIn = "false";
     }
   });
-  res.render("index");
+  if (isLoggedIn) {
+    const fetchArticle = await articleModel.find({}).sort("-date");
+    res.render("articles", { fetchArticle });
+  } else {
+    console.log("hpla123");
+    res.render("index");
+  }
 }
 
 async function postUser(req, res, next) {
   const { username, email, password } = req.body;
   if (username == "" || email == "" || password == "") {
-    alert("Please fill up properly to add user.....");
     return res.redirect("/user");
   }
-  bcrypt.hash(password, 10, async (err, hash) => {
-    if (err) {
-      console.log(err);
-      res.json({
-        error: err,
+  await userModel.findOne({ email }).then((user) => {
+    if (user) {
+      console.log("already exist user");
+      res.redirect("/user");
+    } else {
+      bcrypt.hash(password, 10, async (err, hash) => {
+        if (err) {
+          console.log(err);
+          res.json({
+            error: err,
+          });
+        }
+
+        const newUser = userModel({
+          username,
+          email,
+          password: hash,
+        });
+        await newUser
+          .save()
+          .then((result) => {})
+          .catch((err) => {
+            console.log("error:    ", err);
+          });
+        res.redirect("/user");
       });
     }
-
-    const newUser = userModel({
-      username,
-      email,
-      password: hash,
-    });
-    await newUser
-      .save()
-      .then((result) => {})
-      .catch((err) => {
-        console.log("error:    ", err);
-      });
-    res.redirect("/user");
   });
 }
 
