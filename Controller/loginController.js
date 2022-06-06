@@ -44,14 +44,18 @@ async function postLogin(req, res, next) {
         if (result) {
           //success
           //jwt token
-          console.log("sucessfully login");
 
-          if (isAdmin != "admin") {
-            const fetchArticle = await articleModel.find({}).sort("-date");
-            res.render("articles", { fetchArticle });
+          if (roles == user.roles) {
+            console.log("sucessfully login");
+            if (user.roles != "admin") {
+              const fetchArticle = await articleModel.find({}).sort("-date");
+              res.render("articles", { fetchArticle });
+            } else {
+              const fetchUser = await userModel.find({}).sort("-date");
+              res.render("user", { fetchUser });
+            }
           } else {
-            const fetchUser = await userModel.find({}).sort("-date");
-            res.render("user", { fetchUser });
+            res.render("index");
           }
 
           // const token = jwt.sign(
@@ -81,13 +85,9 @@ async function postLogin(req, res, next) {
   });
 }
 
-var count = 0; //for counting admin
 async function postUser(req, res, next) {
   const { username, email, password, roles } = req.body;
-  if (roles == "admin") {
-    count = count + 1;
-    console.log(count);
-  }
+
   if (username == "" || email == "" || password == "") {
     return res.redirect("/user");
   }
@@ -96,7 +96,8 @@ async function postUser(req, res, next) {
       console.log("already exist user");
       res.redirect("/user");
     } else {
-      if (roles == "admin" && count == 1) {
+      if (roles == "admin") {
+        //if we want to one admin only then chng here
         bcrypt.hash(password, 10, async (err, hash) => {
           if (err) {
             console.log(err);
@@ -170,6 +171,7 @@ async function delUser(req, res, next) {
   if (fetchUser) {
     const id = userModel.findById(req.params.id, async (err, doc) => {
       if (doc.roles == "admin") {
+        //can not delete admin roles
         console.log("Admin Role");
         res.redirect("/user");
       } else {
