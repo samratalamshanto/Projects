@@ -28,7 +28,13 @@
             <input type="password" name="password" placeholder="password" value="" required />
             <div>
                 <br>
-                <input type="text" name="roles" placeholder="Role: admin or editor?" value="" required>
+
+                <input type="radio" name="roles" value="admin" required>
+                <label for="admin">admin</label>
+                <input type="radio" name="roles" value="active" required>
+                <label for="active">active editor</label>
+                <input type="radio" name="roles" value="inactive" required>
+                <label for="inactive">inactive editor</label>
             </div>
 
             <br>
@@ -50,6 +56,7 @@
                 <li>
                     Username: <%= user.username %>,
                         Email: <%= user.email %>,
+                            Role: <%= user.roles%>
 
                 </li>
                 <a href="/user/<%= user._id %>/delete">Delete</a>

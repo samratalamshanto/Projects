@@ -25,7 +25,11 @@
         <form method="post">
             <input type="email" name="email" placeholder="email" value="" required />
             <input type="password" name="password" placeholder="enter password" value="" required />
-            <input type="text" name="roles" placeholder="Role: admin or editor?" value="" required>
+
+            <input type="radio" name="roles" value="admin" required>
+            <label for="admin">admin</label>
+            <input type="radio" name="roles" value="active" required>
+            <label for="active">editor</label>
             <input type="submit" value="Log in" />
             <input type="reset" value="Reset" />
         </form>

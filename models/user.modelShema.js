@@ -19,10 +19,8 @@ const userData = mongoose.Schema({
   },
   roles: {
     type: String,
+    enum: ["admin", "active", "inactive"],
   },
-  // types: {type: String,
-  //    possibleValues : ['blue','red','yellow','black'],
-  //   required: true},
 });
 
 module.exports = mongoose.model("user", userData);

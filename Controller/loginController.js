@@ -29,7 +29,7 @@ async function getArticles(req, res, next) {
 
 async function postLogin(req, res, next) {
   const { email, password, roles } = req.body;
-  const isAdmin = roles;
+  console.log(roles);
   if (email == "" || password == "") {
     return res.redirect("/");
   }
@@ -41,21 +41,17 @@ async function postLogin(req, res, next) {
             ERR: "Error!!!",
           });
         }
-        if (result) {
+        if (result && roles == user.roles) {
           //success
           //jwt token
 
-          if (roles == user.roles) {
-            console.log("sucessfully login");
-            if (user.roles != "admin") {
-              const fetchArticle = await articleModel.find({}).sort("-date");
-              res.render("articles", { fetchArticle });
-            } else {
-              const fetchUser = await userModel.find({}).sort("-date");
-              res.render("user", { fetchUser });
-            }
+          console.log("sucessfully login");
+          if (user.roles == "active") {
+            const fetchArticle = await articleModel.find({}).sort("-date");
+            res.render("articles", { fetchArticle });
           } else {
-            res.render("index");
+            const fetchUser = await userModel.find({}).sort("-date");
+            res.render("user", { fetchUser });
           }
 
           // const token = jwt.sign(
@@ -91,11 +87,21 @@ async function postUser(req, res, next) {
   if (username == "" || email == "" || password == "") {
     return res.redirect("/user");
   }
-  await userModel.findOne({ email }).then((user) => {
+  await userModel.findOne({ email }).then(async (user) => {
     if (user) {
       console.log("already exist user");
       res.redirect("/user");
     } else {
+      var oneActive = 0;
+      if (roles == "active") {
+        await userModel.findOne({ roles: "active" }).then((user) => {
+          if (user) {
+            console.log("already exist active user");
+            res.redirect("/user"); //return so can not add active user if there is active user
+            oneActive = 1;
+          }
+        });
+      }
       if (roles == "admin") {
         //if we want to one admin only then chng here
         bcrypt.hash(password, 10, async (err, hash) => {
@@ -120,7 +126,7 @@ async function postUser(req, res, next) {
             });
           res.redirect("/user");
         });
-      } else if (roles == "editor") {
+      } else if (oneActive != 1) {
         bcrypt.hash(password, 10, async (err, hash) => {
           if (err) {
             console.log(err);
